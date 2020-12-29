@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}
+  create new announcement
+{% endblock %}
+{% block active_announces %}
+<a class="active" href="javascript:;">
+{% endblock %}
+{% block stylesheet %}
+<style>
+  .hide{
+    display: none;
+  }
+</style>
+{% endblock %}
+{% block body %}
+<div class="row">
+  <div class="col-md-1"></div>
+  <div class="col-md-10" style="opacity: 0.9;color: black;">
+    <div class="white-panel">
+      <div class="panel bg-theme">
+        <h3 class="form-login-heading" style="color: snow;"><b>Edit announcement</b></h3>
+      </div>
+      <div class="panel-body"  style="height: 450px;overflow-y: auto;overflow-x: hidden;">
+        <form method="POST" id="anct" enctype="multipart/form-data" onsubmit="return validation()">
+          {% csrf_token %}
+          {{edit_form.media}}
+          <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-7 col-xs-8">{{edit_form.title|as_crispy_field}}</div>
+            <div class="col-xs-4" style="padding-left:unset;">{{edit_form.file|as_crispy_field}}</div>
+          </div>
+          <div class="row">
+            {{edit_form.content|as_crispy_field}}
+          </div>  
+          <div class="row"> 
+            <div class="col-md-1"></div>
+            <div id="id_cat" class="fields form-group col-md-10"> </div> 
+            <div class="col-md-1"></div>
+          </div>
+          <input type="hidden" value="edit_form" name="form_name">
+          <button type="submit" class="pull-right btn btn-theme btn-sm">
+            <i class="fa fa-plus-circle"></i>
+            &nbsp; Update
+          </button>
+          <br><br>
+        </form>
+      </div>
+    </div>  
+  </div> 
+  <div class="col-md-1"></div>
+</div>
+
+<input type="hidden" value="{{request.user.username}}" id="user">
+{% endblock %}
+
+{% block script %}
+<script>
+  $(document).ready(function(){
+    $('.my_select').selectpicker()
+  })
+</script>
+{% endblock %}

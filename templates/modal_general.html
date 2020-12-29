@@ -1,0 +1,65 @@
+{% load static %}
+
+{% block stylesheet %}
+<style>
+  p {
+    font-size: 13px !important;
+    margin:unset !important;
+  }
+</style>
+{% endblock %}
+    <div class="modal-body">
+        <div class="row mt">
+            <div class="col-xs-1"></div>
+            <div class="col-xs-10" style="border-style: groove;">
+              <div class="white-panel" >
+                <div class="row panel-heading">
+                  <div class="col-xs-6">
+                    <img class="pull-left" style="width: 50%;" src="{% static 'img/logoo.jpg' %}">
+                  </div>
+                  <div class="col-xs-6">
+                    <i class="pull-right">{{announce.date|date:'F d, Y'}}</i>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div>
+                    <h4><u>{{announce.title}}</u></h4>
+                  </div>
+                  <br>
+                  <div class="row" style="height: 300px;overflow-y: auto;overflow-x: hidden;">
+                      <div>
+                      {{announce.content|safe}}
+                      </div>  
+                  </div>
+                  <br>
+                  <div>
+                  {% if announce.file %}
+                    <a href="{% url 'home' %}media/{{announce.file}}" target="_blank" style="position: absolute;bottom: 20px;left:20px;">
+                      <i class="fa fa-paperclip"></i> Attachment
+                    </a><br>
+                  {% endif %} 
+                  <div class="badge" style="position: absolute;bottom: 20px;right:20px;">
+                    by: <b>{{announce.sender}}</b>/<i>{{announce.sender.category|truncatechars:10}}</i>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-1"></div>
+        </div> 
+    </div>
+    <div class="text-center ">
+        <a type="button" class="btn btn-warning btn-round btn-xs" data-dismiss="modal">
+            <i class="fa fa-times"></i>
+            Close
+        </a>
+        {% if user.is_authenticated %}
+          {% if request.user == announce.sender %}
+          <a type="button" class="btn btn-primary btn-round btn-xs" href="{% url 'edit' announce.id request.user.username %}">
+            <i class="fa fa-edit"></i>
+            Edit
+          </a>
+          {% endif %} 
+        {% endif %}   
+    </div>
+    <br>

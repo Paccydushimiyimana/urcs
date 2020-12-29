@@ -1,0 +1,39 @@
+{% if page == 'create' %}
+<select class="my_select form-control" id="id_department" name="Depart" multiple data-selected-text-format="count>1"> 
+ {% for department in departments %}   
+  <option value="{{department}}">{{department}}</option>  
+ {% endfor %} 
+</select>
+{% else %}
+<select class="my_select form-control" id="id_department" name="Depart"> 
+    <option value=""></option>
+  {% for department in departments %}   
+    <option value="{{department}}">{{department}}</option>  
+  {% endfor %} 
+</select>
+{% endif %}
+
+<script>
+$(document).ready(function(){
+       $('.my_select').selectpicker()
+    }) 
+
+$('#id_department').change(function() {
+    let depart_select = $(this).val();
+    j_depart = JSON.stringify(depart_select) 
+    console.log(j_depart);
+    if (j_depart != 'null'){
+        $.ajax({
+            url: "{% url 'load_levels' %}",
+            data: {
+                department: j_depart,
+                page:"{{page}}"
+            },
+            success: function(response) {
+                $('#level').html(response)
+            }
+        })
+    }
+    
+});
+</script>

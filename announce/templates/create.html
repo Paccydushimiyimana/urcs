@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}
+  create new announcement
+{% endblock %}
+{% block active_announces %}
+<a class="active" href="javascript:;">
+{% endblock %}
+{% block stylesheet %}
+<style>
+  .hide{
+    display: none;
+  }
+</style>
+{% endblock %}
+{% block body %}
+<div class="row">
+  <div class="col-md-1"></div>
+  <div class="col-md-10" style="opacity: 0.9;color: black;">
+    <div class="white-panel">
+      <div class="panel bg-theme">
+        <h3 class="form-login-heading" style="color: snow;"><b>Create new announcement</b></h3>
+      </div>
+      <div class="panel-body"  style="height: 450px;overflow-y: auto;overflow-x: hidden;">
+        <form method="POST" id="anct" enctype="multipart/form-data" onsubmit="return validation()">
+          {% csrf_token %}
+          {{create_form.media}}
+          <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-7 col-xs-8">{{create_form.title|as_crispy_field}}</div>
+            <div class="col-xs-4" style="padding-left:unset;">{{create_form.file|as_crispy_field}}</div>
+          </div>
+
+          <div class="row">
+            {{create_form.content|as_crispy_field}}
+          </div>
+          <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-2 col-xs-3">
+              <div style="padding-top: 8px;">
+                <span>General </span>
+                <input id="general" type="checkbox" name="genl">
+              </div><br>
+            </div>
+            <div class="col-md-8 col-xs-9" style="padding: unset;">
+              <div class="fields" id="category">
+                <label for="id_category">Category</label>
+                <div class="error_msg" id="cat_msg"><b><i class="fa fa-exclamation-circle"></i></b></div>
+                <select class="my_select" id="id_category" name="Catgy">
+                  <option value=""></option>
+                {% for category in categories %} 
+                  <option  value="{{category.name}}">{{category.name}}</option>
+                {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-1"></div>
+          </div>   
+          
+         
+          <div class="row"> 
+            <div class="col-md-1"></div>
+            <div id="id_cat" class="fields form-group col-md-10"> </div> 
+            <div class="col-md-1"></div>
+          </div>
+          <hr>
+          <input type="hidden" value="create_form" name="form_name">
+          <button type="submit" class="pull-right btn btn-theme btn-sm">
+            <i class="fa fa-plus-circle"></i>
+            create
+          </button>
+          <br><br>
+        </form>
+      </div>
+    </div>  
+  </div> 
+  <div class="col-md-1"></div>
+</div>
+<input type="hidden" value="{{request.user.username}}" id="user">
+{% endblock %}
+
+{% block script %}
+<script>
+  function validation() {
+    if($('#general').is(':not(:checked)')){
+      var cat = $("#id_category").val();
+      if (cat == '') {
+        msg = document.getElementById('cat_msg')
+        msg.style.display="inline"
+        setTimeout(()=> {msg.style.display="none"} ,3000)
+        return false;
+      }
+      else{
+        if(cat =='Student'){
+          var sub = $("#id_sub_category").val();
+          var skl = $("#id_school").val();
+          var depart = $("#id_department").val();
+          var lev = $("#id_level").val();
+          if (sub == null) {
+            msg = document.getElementById('sub_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (skl == null) {
+            msg = document.getElementById('skl_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (depart == null) {
+            msg = document.getElementById('depart_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (lev == null) {
+            msg = document.getElementById('lev_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+        }
+        if(cat =='Lecturer'){
+          var sub = $("#id_sub_category").val();
+          var skl = $("#id_school").val();
+          var depart = $("#id_department").val();
+          var lev = $("#id_level").val();
+          if (sub == null) {
+            msg = document.getElementById('sub_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (skl == null) {
+            msg = document.getElementById('skl_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (depart == null) {
+            msg = document.getElementById('depart_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (lev == null) {
+            msg = document.getElementById('lev_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+        }
+        if(cat =='Department council'){
+          var sub = $("#id_sub_category").val();
+          var skl = $("#id_school").val();
+          var depart = $("#id_department").val();
+          if (sub == null) {
+            msg = document.getElementById('sub_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (skl == null) {
+            msg = document.getElementById('skl_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (depart == null) {
+            msg = document.getElementById('depart_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+        }
+        if(cat =='School council'){
+          var sub = $("#id_sub_category").val();
+          var skl = $("#id_school").val();
+          if (sub == null) {
+            msg = document.getElementById('sub_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+          if (skl == null) {
+            msg = document.getElementById('skl_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+        }
+        if(cat =='Academic council'){
+          var sub = $("#id_sub_category").val();
+          if (sub == null) {
+            msg = document.getElementById('sub_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+        }
+        if(cat =='College council'){
+          var sub = $("#id_sub_category").val();
+          if (sub == null) {
+            msg = document.getElementById('sub_msg')
+            msg.style.display="inline"
+            setTimeout(()=> {msg.style.display="none"} ,3000)
+            return false;
+          }
+        }
+      }         
+    }
+  }
+</script>
+<script>
+  $(document).ready(function(){
+    $('.my_select').selectpicker()
+  })
+
+  $('#general').change(function(){
+    $('#modal_cat').show()
+    if ($(this).is(':checked')){
+      $('.fields').addClass('hide')
+    }
+    else{
+      $('.fields').removeClass('hide')
+    }
+  })
+
+  $('#id_category').change(function() {
+    let fld_url = $('#user').data('urlcategory');
+    let cat_select = $(this).val();
+    $.ajax({
+      url: "{% url 'load_category' %}",
+      data: {
+        category : cat_select,
+        page : 'create'
+      },
+      success: function(response) {
+        $('#id_cat').html(response)
+      }
+    })
+  });
+</script>
+{% endblock %}

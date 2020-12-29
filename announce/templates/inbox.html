@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+  {{user}} Inbox
+{% endblock %}
+{% block stylesheet %}
+<style>
+  .striker{
+    text-decoration: line-through!important;
+  }
+</style>
+{% endblock %}
+{% block active_announces %}
+  <a class="active" href="javascript:;">
+{% endblock %}
+{% block active_ancts_inbox %}
+<li class="active">
+{% endblock %} 
+{% block bdy_tag %}
+  <body onresize="resize_fx()"> 
+{% endblock %}
+{% block body %}   
+    <div class="row">
+      <div class="col-md-10">
+        <form id="form" method="POST">
+          {% csrf_token %}
+          <div class="white-panel" style="opacity: 0.95">
+            <div class="panel-heading">
+              <div>
+                <div class="pull-left">
+                  <h5><i class="fa fa-tasks"></i> Inbox List</h5>
+                </div>
+                <a data-original-title="Refresh" data-placement="top" href="" class="btn mini tooltips">
+                  <i class=" fa fa-refresh"></i>
+                </a>
+                <input id="hide" class="btn btn-xs btn-warning" type="hidden" value="move to &RightArrow;" data-toggle="modal" data-target="#modal_checked">
+                <div class="pull-right">
+                  <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_archive">
+                    <i class="fa fa-archive"></i> My Archive
+                  </a>              
+                </div>
+              </div>
+              <div class="pull-right">
+                <input id="search" type="text" class="form-control " placeholder="Search...">
+              </div>
+            </div><hr>
+            
+            {% if announces %}  
+            <div class="panel-body" style="height: 400px;overflow-y: auto;">
+              <table class="table table-hover" >
+                <tbody id="tbody">
+                {% for announce in announces %}
+                  {% if announce  not in user.archives.all %}
+                    {% if user not in announce.viewed_by.all %}
+                      <tr style="background-color: rgba(201, 201, 201, 0.3);">
+                        <td class="col-xs-6" style="text-decoration: inherit;">
+                            <div class="pull-left">
+                              <input class="check" type="checkbox" name="row" value="{{announce.id}}">&nbsp;&nbsp;
+                              <b><a id="{{announce.id}}" class="title" data-id="{{announce.id}}" data-title="{{announce.title}}" href="{% url 'view' 'inbox' announce.pk %}"></a></b>                    
+                            </div>
+                        </td>
+                        <td class="col-xs-1">
+                          <div class="pull-left">
+                            {% if announce.file %}
+                            <i class="fa fa-paperclip"></i>
+                            {% endif %}
+                          </div>
+                        </td>
+                        <td class="col-xs-3">
+                          <span>  
+                            By_<b>{{announce.sender}}</b>/<i>{{announce.sender.category|truncatechars:8}}</i>
+                          </span>
+                        </td>
+                        <td class="col-xs-2">
+                          <div class="row">
+                            <i class="fa fa-calendar" style="font-size: 10px;"></i>    
+                            {{announce.date|date:'M,d'}}
+                          </div>
+                        </td>
+                      </tr>
+                    {% else %}
+                      <tr>
+                        <td class="col-xs-6" style="text-decoration: inherit;">
+                            <div class="pull-left">
+                              <input class="check" type="checkbox" name="row" value="{{announce.id}}">&nbsp;&nbsp;
+                              <b><a id="{{announce.id}}" class="title" data-id="{{announce.id}}" data-title="{{announce.title}}" href="{% url 'view' 'inbox' announce.pk %}"></a></b>                    
+                            </div>
+                        </td>
+                        <td class="col-xs-1">
+                          <div class="pull-left">
+                            {% if announce.file %}
+                            <i class="fa fa-paperclip"></i>
+                            {% endif %}
+                          </div>
+                        </td>
+                        <td class="col-xs-3">
+                          <span>  
+                            By_<b>{{announce.sender}}</b>/<i>{{announce.sender.category|truncatechars:10}}</i>
+                          </span>
+                        </td>
+                        <td class="col-xs-2">
+                          <div class="row">
+                            <i class="fa fa-calendar" style="font-size: 10px;"></i>    
+                            {{announce.date|date:'M,d'}}
+                          </div>
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endif %}  
+                {% endfor %} 
+                </tbody>
+              </table>
+            </div>
+            {% else %} 
+            <div class="panel-body" style="height: 350px;overflow-y: auto;">
+              <table class="table table-hover">
+                <tbody>
+                <h3><i class="fa fa-exclamation"></i> Your inbox is currently empty !!</h3><br><br>
+                <h4 class="pull-left">
+                  This is because,your account is still new.
+                </h4><br>
+                <p>
+                  <h5 class="pull-left">You will start receiving announcements soon</h5>                
+                </p>  
+              </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+
+{% endblock %} 
+{% block modals %}
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal_checked">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content form-login mymodal"> 
+          </div>
+      </div>
+    </div>
+
+  {% include 'modal_archive.html' %}
+{% endblock %}  
+{% block script %}
+<script>
+  truncate_fx();
+
+  function resize_fx() {
+    truncate_fx();
+  }
+
+  function truncate_fx() {
+    $('.title').each(function(){
+      var og_text = $(this).data('title')
+      var _id = $(this).data('id')
+      var  wdt = parseInt(window.outerWidth/36)
+
+      if (og_text.length > wdt){
+        new_text = og_text.substring(0,wdt)
+        $('#'+_id).html(new_text+'...')
+      }
+      else{
+        $('#'+_id).html(og_text)   
+      }
+    })
+  }
+</script>
+<script> 
+  $(document).ready(function() { 
+    $("#search").on("keyup", function() { 
+      var value = $(this).val().toLowerCase(); 
+      $("#tbody tr").filter(function() { 
+        $(this).toggle($(this).text() 
+        .toLowerCase().indexOf(value) > -1) 
+      }); 
+    }); 
+  }); 
+</script>
+<script>
+  $(document).ready(function() { 
+    $('.check').change(function () {
+      if ($(this).is(':checked')){
+        var row = $(this).parent().parent().parent()
+        row.addClass('striker')
+      }
+      else{
+        var row = $(this).parent().parent().parent()
+        row.removeClass('striker')
+      }
+      var active 
+      var hider = $('#hide')
+      $('.check').each(function(){  
+        if ($(this).is(':checked')){
+          active = 1
+        }
+      })
+      if (active == 1){
+        hider[0].type='submit'
+      }
+      else{
+        hider[0].type='hidden'
+      }
+    })
+  })
+
+  $('#form').submit(function(self){
+    self.preventDefault()
+    var list = []
+    $('.check').each(function(){  
+      if ($(this).is(':checked')){
+        data = parseInt($(this).val())
+        list.push(data)
+      }
+    })     
+      console.log('final',list)
+      j_list = JSON.stringify(list)
+      console.log('ajax',j_list)
+    $.ajax({
+      url:"{% url 'archive_rows' %}",
+      data:{rows:j_list,page:'{{page}}'},
+      success:function (response) {
+        $('.mymodal').html(response)
+      }
+    })
+  })  
+</script>
+{% endblock %}

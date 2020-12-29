@@ -1,0 +1,33 @@
+{% load crispy_forms_tags %}
+  <!-- <div class="modal-header">
+      <button class="btn-warning btn-round pull-right" data-dismiss="modal"><i class="fa fa-times"></i></button> -->
+      <!-- <h4 class="modal-title text-xs-center">Hide announces</h4> -->
+  <!-- </div> -->
+  <div style="margin:20px;">   
+    <a class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></a>
+    <h4 class="text-xs-center"><b>Delete confirm</b></h4>
+  </div><hr>
+  <div class="modal-body">
+    <form method="POST" id="anct" enctype="multipart/form-data">
+      {% csrf_token %}
+        <h5>Are you sure you want to delete the following from your {{page}}<br></h5>
+        <br>
+        <div style="height: 200px;overflow-y: auto;">
+          <ol>
+            {%for announce in announces%}
+              <li>{{announce.title|truncatechars:40}}</li>
+              <input type="hidden" name="announces" value="{{announce.id}}">
+            {%endfor%}
+          </ol>
+        </div>
+        <br>
+        <input type="hidden" name="form_name" value="archive_form">
+        <div class="text-center">  
+          <button type="submit" class="pull-right btn btn-theme btn-xs">
+            <i class="fa fa-trash"></i>
+            Confirm
+          </button>
+        </div>
+    </form>
+  </div>
+  <hr>

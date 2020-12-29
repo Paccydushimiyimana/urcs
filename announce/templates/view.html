@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+  {{user}} Inbox
+{% endblock %}
+{% block active_announces %}
+  <a class="active" href="javascript:;">
+{% endblock %}
+{% block active_an_inbox %}
+  <li class="active">
+{% endblock %}
+{% block active_an_board %}
+  <li class="active">
+{% endblock %}
+{% block stylesheet %}
+<style>
+  p {
+    font-size: 13px !important;
+    margin:unset !important;
+  }
+</style>
+{% endblock %}
+{% block body %}
+<div class="row ">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+    <div class="white-panel">
+      <div class="row">
+        <div class="mt col-lg-11 col-xs-10" style="border-style: groove;margin-left: 30px;">
+          <div class="row panel-heading">
+            <div class="col-xs-6">
+              <img class="pull-left" style="width: 50%;" src="{% static 'img/logoo.jpg' %}">
+            </div>
+            <div class="col-xs-6">
+              <q class="pull-right">{{announce.date|date:'F d, Y'}}</i>
+            </div>
+          </div>
+          <div class="panel-body" style="padding: unset;">
+            <div>
+              <h4><u>{{announce.title}}</u></h4>
+            </div>
+            <div class="row">
+              <div style="height: 280px;overflow-y: auto;overflow-x: hidden;">
+              <span>{{announce.content|safe}}</span> 
+              </div>
+              <br>
+              <div>
+              {% if announce.file %}
+                <a href="{% url 'home' %}media/{{announce.file}}" target="_blank">
+                  <i class="fa fa-paperclip"></i> Attachment
+                </a><br>
+              {% endif %} 
+              </div><br><br>
+              <div style="position: absolute;bottom: 20px;left:10px;border-bottom: solid;">
+                <i class="fa fa-eye bg-success"></i>
+                {{announce.viewed_by.all.count}} : 
+                {% if announce.general %}
+                <span>All</span>
+                {% else %}
+                <span>{{announce.receiver.all.count}}</span>
+                {% endif %}
+              </div>
+              <div class="badge" style="position: absolute;bottom: 20px;right:10px;">
+                by: <b>{{announce.sender}}</b>/<i>{{announce.sender.category|truncatechars:10}}</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt" style="margin-right: 10px;padding: 5px;">
+            <a href="{% url from user.username %}" class="btn btn-success btn-xs"><i class="fa fa-long-arrow-left"></i></a><br><br>
+          {% if user == announce.sender %}
+            <a href="{% url 'edit' announce.id user.username %}" class="btn btn-theme btn-xs"><i class="fa fa-edit"></i></a><br><br>
+            <a id="modal_delete" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal_id"
+            data-url="{% url 'modal_delete_pass' announce.id %}">
+            <i class="fa fa-trash-o "></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+  <div class="col-sm-1"></div>
+</div> 
+
+{% endblock %}
+{% block modals %}
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_id">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content form-login mymodal"> 
+      </div>
+  </div>
+</div>
+
+{% endblock %} 
+{% block script %}
+<script>
+  $('#modal_edit').click(function(){
+    $.ajax({
+      url:$(this).data('url'),
+      success:function(self){
+        $('.mymodal').html(self)
+      }
+    })
+  })
+  $('#modal_delete').click(function(){
+    $.ajax({
+      url:$(this).data('url'),
+      success:function(self){
+        $('.mymodal').html(self)
+      }
+    })
+  })
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_login">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content form-login">  
+        <div class="modal-header modal-title">
+          <span class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></span>
+          <h4 class="modal-title text-center"><b>Login now</b></h4>
+        </div>
+        <div class="modal-body">
+          <div>             
+            <form method="POST" class="login-wrap">
+              {% csrf_token %}
+              {{login_form|crispy}}
+              <span class="pull-left fa fa-eye showhide"></span>
+              <a class="pull-right" href="{% url 'password_reset' %}">Forgot Password?</a>
+              <br>
+              <input type="hidden" name="form_name" value="login_form">
+              
+              <div class="text-center">
+              <button class="btn btn-theme btn-block" type="submit">
+                <i class="fa fa-unlock-alt"></i>
+                Login
+              </button>
+              </div>
+            </form>
+          </div>
+          <hr>
+          <div class="text-center">
+            Don't have an account yet? <br>
+            <a href="{% url 'register' %}"><strong class="text-danger">register here</strong></a>!
+          </div> 
+        </div>
+      </div>
+    </div>
+</div>

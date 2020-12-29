@@ -1,0 +1,19 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_logout">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content form-login">  
+      <div style="margin:20px;">
+        <a class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></a>
+        <h4><b>Logout confirm</b></h4>
+      </div><hr>
+        <form method="POST" class="login-wrap">
+          {% csrf_token %}
+          <h5>Are you sure you want to logout: "<b>{{user.username}}</b>" ??</h5>
+          <input type="hidden" name="form_name" value="logout_form">
+          <br>
+          <div class="text-center">
+            <button class="btn btn-theme btn-sm" type="submit">Logout</button>
+          </div>
+        </form>
+    </div>
+  </div>
+</div>

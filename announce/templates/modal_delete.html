@@ -1,0 +1,21 @@
+<div style="margin: 20px;">
+    <a class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></a>
+    <h4 class="text-xs-center"><b>Delete confirm</b></h4>
+  </div>
+  <hr>
+  <div class="modal-body">
+    <form method="POST" id="anct" enctype="multipart/form-data">
+      {% csrf_token %}
+        <h5>Are you sure you want to delete:<br>
+        "<b>{{announce}}</b>"?</h5>
+        <input type="hidden" name="announce_id" value="{{announce.id}}">
+        <input type="hidden" name="form_name" value="delete_form">
+        <div class="text-center">  
+          <button type="submit" class="pull-right btn btn-theme btn-xs">
+            <i class="fa fa-trash"></i>
+            Confirm
+          </button>
+        </div>
+    </form>
+  </div>
+  <hr>

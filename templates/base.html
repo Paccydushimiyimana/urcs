@@ -1,0 +1,381 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    {% block title %}
+    {% endblock %}
+  </title>
+
+  <link href="{% static 'img/logo.png' %}" rel="icon" >
+  
+  <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+  <link href="{% static 'css/bootstrap-select.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/mystyle.css' %}" rel="stylesheet">
+  <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+
+  {% block stylesheet %}
+  {% endblock %}
+</head>
+{% block bdy_tag %}
+<body>
+{% endblock %}  
+  <section id="container">
+    <header class="header black-bg">
+      <div class="sidebar-toggle-box">
+        <div class="fa fa-bars tooltips" data-placement="right"></div>
+      </div>
+      <a href="{% url 'home' %}" class="logo"><b>ur<span>cs</span></b></a>
+   
+      <div class="top-menu">
+        <ul class="nav pull-right top-menu">
+
+          <div class="sidebar-toggle-box">
+            <ul class="nav top-menu">
+              <li id="header_notification_bar" class="dropdown">
+                {% if user.is_authenticated %}
+                <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+                  <i class="fa  fa-bell-o"></i>
+                </a>
+                <span id="notify" class="badge bg-warning" style="position:absolute;margin-top: -40px;margin-left: 14px;"></span>
+                <ul class="dropdown-menu extended notification">
+                  <div class="notify-arrow notify-arrow-yellow"></div>
+                  <li>
+                    <b><p class="yellow">You have <span id="sub_notify"></span> new notifications</p></b>
+                  </li>
+                  <div id="not_list">
+                    <li>
+                      <a href="#">
+                        <span class="label label-danger"><i class="fa fa-inbox"></i></span>
+                        &nbsp;Unread announces
+                        <span class="pull-right small italic nrd_anc"></span>
+                        </a>
+                    </li>
+                    <li>
+                      <a href="#">
+                        <span class="label label-warning"><i class="fa fa-comments-o"></i></span>
+                        &nbsp;Unread messages
+                        <span class="pull-right small italic nrd_chat"></span>
+                        </a>
+                    </li>
+                  </div>
+                </ul>
+                {% else %}
+                <a class="dropdown-toggle" href="javascript:;" data-toggle="modal" data-target="#modal_">
+                  <i class="fa  fa-bell-o"></i>
+                </a>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+          
+          {% if user.is_authenticated %}
+          <div class="sidebar-toggle-box">
+            <a href="{% url 'profile' user %}">
+              <h4 style="color: snow;margin-top: 0px;">
+                <i class="fa fa-user"></i>
+                {{user.first_name}}
+              </h4>
+            </a>
+          </div>
+            {% if user.username == 'admin' %}
+            <li><a href="{% url 'register' %}" class="logout">register</a></li>
+            {% else %}
+            <li><a href="javascript:;" class="logout" data-toggle="modal" data-target="#modal_logout">Logout</a></li>
+            {% endif %}
+            {% else %}
+          <li><a href="javascript:;" class="logout" data-toggle="modal" data-target="#modal_login">Login</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </header>
+    <aside>
+      <div id="sidebar" class="nav-collapse ">
+        <ul class="sidebar-menu" id="nav-accordion">
+          <p class="centered"><img src="{% static 'img/logo.png' %}" width="90"></a></p>
+          {% if user.is_authenticated %}
+          <h5 class="centered">{{user}}/{{user.category}}</h5>
+          {% else%}
+          <h5 class="centered">You have not looged in</h5>
+          {% endif %}
+          <li class="mt">
+            {% block active_home %}
+            <a href="{% url 'home' %}">
+            {% endblock %}  
+              <i class="fa fa-home"></i>
+              <span>HOME</span>
+            </a>
+          </li>
+          <li class="sub-menu">
+              {% block active_announces %}
+              <a href="javascript:;">
+              {% endblock %}  
+                <i class="fa fa-bullhorn"></i>
+                <span>ANNOUNCES</span>&emsp;
+                <span class=" badge bg-warning nrd_anc"></span>
+              </a>
+                <ul class="sub">
+                  {% block active_ancts_inbox %}
+                  <li>
+                  {% endblock %}
+                      {% if user.is_authenticated %}
+                    <a href="{% url 'inbox' user.username %}">
+                      {% else %}
+                    <a href="{% url 'inbox' 'user' %}">
+                      {% endif %}    
+                      <i class="fa fa-inbox"></i>
+                      Inbox &emsp;
+                      <span id="nrd_anct" class=" label"></span>
+                    </a>
+                  </li>
+                  {% if user.category.name != 'Student' %}
+                  {% block active_ancts_board %}
+                  <li>
+                  {% endblock %}
+                      {% if user.is_authenticated %}
+                    <a href="{% url 'board' user.username %}">
+                      {% else %}
+                    <a href="{% url 'board' 'user' %}">
+                      {% endif %}   
+                      <i class="fa fa-book"></i>
+                      Board
+                    </a>   
+                  </li>  
+                  {% endif %}            
+                </ul>
+          </li>
+          <li class="sub-menu">
+                {% block active_chat %}
+                {% if user.is_authenticated %}
+              <a href="{% url 'chat' user.username %}">
+                {% else %}
+              <a href="{% url 'chat' 'user' %}">
+                {% endif %}   
+                {% endblock %}  
+                <i class="fa fa-comments-o"></i>
+                <span>CHAT ROOM</span>&emsp;
+                <span id="nrd_chat" class="badge bg-warning nrd_chat"></span>
+              </a>
+          </li>
+          <li class="sub-menu">
+            {% block active_acc %}
+            <a href="javascript:;">
+            {% endblock %}  
+              <i class="fa fa-user-md"></i>
+              <span>ACCOUNT</span>
+            </a>
+              <ul class="sub">
+                {% block active_acc_prfle %}
+                <li>
+                {% endblock %}
+                  {% if user.is_authenticated %}
+                  <a href="{% url 'profile' user.username %}">
+                    {% else %}
+                  <a href="{% url 'profile' 'user' %}">
+                    {% endif %}   
+                    <i class="fa fa-user"></i>
+                    Profile
+                  </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li>
+                  <a href="javascript:;" data-toggle="modal" data-target="#modal_pwd"> 
+                    <i class="fa fa-unlock-alt"></i>
+                    Change password
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:;" data-toggle="modal" data-target="#modal_logout">
+                    <i class="fa fa-sign-out"></i>
+                    Log out
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+          </li>
+        </ul>
+      </div>
+    </aside>
+    <section id="main-content">
+      <div id="bg_div" class="jumbotron" style="background-image:url('/static/img/backgd.jpg');background-repeat: no-repeat;background-size:100% 100% ;">     
+        <section class="wrapper">
+          {% if messages %}
+            <div style="position:absolute;margin-top:-30px;z-index: 10;opacity: 0.95;right: 0;">      
+              {% for message in messages %}        
+                <div class="btn btn-{{message.tags}} alert" style="width:fit-content;">
+                  <span style="margin-top: -10px;margin-bottom: -10px ;" type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="fa fa-times fa-xs"></i></span>
+                  <span style="margin-top: -10px;margin-bottom: -15px ;" class="pull-right"><i class="fa fa-envelope fa-xs"></i> {{message}} &nbsp;</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div>
+            {% block body %}
+            {% endblock %}
+          </div>
+          <div>
+            {% block modals %}
+            {% endblock %}
+
+            {% include 'modal_pwd.html' %}
+            {% include 'modal_logout.html' %}
+            {% include 'modal_contact.html' %}
+          </div>
+        </section>
+      </div>
+      <footer class="wrapper bg-theme" style="position:relative;margin-top: -28px;color: snow;">
+        <div class="row">
+          <div class="col-xs-2"></div>
+          <div class="col-xs-8">
+            <div class="text-center">
+              &copy; Copyrights <b>URCS</b> All Rights Reserved
+              <br>
+              <i class="fa">Designed by IT team (2020)</i>
+            </div> 
+            <hr>
+            <div class="text-center">
+              <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#modal_contact">Contact us</a> 
+            </div>
+          </div>
+          <div class="col-xs-2"></div>
+        </div>
+      </footer>
+    </section>
+  </section>
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap-select.min.js' %}"></script>
+  <script src="{% static 'js/jquery.dcjqaccordion.2.7.js' %}" class="include"></script>
+  <script src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
+  <script src="{% static 'js/jquery.nicescroll.js' %}"></script>
+  <script src="{% static 'js/jquery.sparkline.js' %}"></script>
+  <script src="{% static 'js/common-scripts.js' %}"></script>
+  <script>
+    $(document).ready(function resizee() {
+      var h = window.outerHeight
+      if (h > 700 ){
+        var hgt = (h-(h/15))+'px'
+        document.querySelector('#bg_div').style.height = hgt;
+      }
+    })
+  </script>
+  {% if user.is_authenticated %}
+  <input id="user" type="hidden" value="{{user.username}}">
+  <!-- functions for notifications-->
+  <script>
+    //general notifications
+    function load_notifs(){
+      var notify = 0
+
+      $.ajax({
+        url: "{% url 'unreads_anct' %}",
+        success: function(respanct) {
+          // announce notifications
+          // console.log('announce response',respanct)
+          if (respanct > 0){
+            $('.nrd_anc').html(respanct)
+            $('#nrd_anct').html('('+respanct+')')
+            notify = parseInt(respanct)
+          }
+          else{
+            $('.nrd_anc').html('')
+            $('#nrd_anct').html('')
+          }
+
+          $.ajax(
+            {
+            url: "{% url 'unreads_chat' %}",
+            success: function(respchat) {
+              // chat notiications
+              // console.log('chat response',respchat)
+              if (respchat > 0 ){
+                $('.nrd_chat').html(respchat)
+                  notify = parseInt(notify)+parseInt(respchat)
+              }
+              else{
+                $('.nrd_chat').html('')
+              } 
+
+              // total notifications value
+              // console.log('total response:',notify)
+              if(notify>0){
+                $('#notify').html(notify)
+                $('#sub_notify').html(notify)
+              }
+              else{
+                $('#notify').html('')
+                $('#sub_notify').html('no')
+                document.getElementById('not_list').style.display="none"
+              }
+
+            },
+          })
+     
+        },
+      },
+      );
+      
+    }
+
+    //chat notifications
+    function load_chats(){
+      $('.room').each(function(){
+        var id = $(this).val()
+        $.ajax({
+          url : "{% url 'unreadz' %}",
+          data :{room_id:id},
+          success:function(self){ 
+            if (self > 0){      
+                $('#'+id).html(self)
+            }
+          }
+        });
+      })
+    };
+  </script>
+  <script>
+    load_notifs(); //loads all notification everytime base.html is loaded
+  </script>
+  <!-- script for websocket connection on base temp -->
+  <script>
+    var prot = 'ws://' 
+    if (window.location.protocol == 'https:'){
+      prot = 'wss://'
+    }
+    // Create a new WebSocket
+    var ws = new WebSocket(prot+window.location.host)
+    var nl = $('#notifylist')
+    // WebSocket opens
+    ws.onopen = function(self) {
+      console.log('connected')
+    }
+    // Websocket  message is received
+    ws.onmessage = function(self){
+      load_notifs(); //loads all notification whenever a message is received 
+      data = JSON.parse(self.data)
+      if (data.event == 'New announce'){
+        $.ajax({
+          url: "{% url 'new_row' %}",
+          data : { _id:data.id},
+          success: function(response) {
+            console.log(response)  
+            if (response != 'No'){
+              $('#tbody').append(response)
+            }
+          }
+        })
+      }
+      if (data.event == 'New message'){
+        load_chats(); //loads chat notifications whenever a chat message is created
+      }
+    }
+  </script>
+  {% endif %}
+  {% block script %}
+  {% endblock %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+<div style="margin: 20px;">
+    <a class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></a>
+    <h4 class="text-xs-center"><b>Delete confirm</b></h4>
+  </div>
+  <hr>
+  <div class="modal-body">
+    <form method="POST">
+      {% csrf_token %}
+        <h5>Delete chat room with:
+        "<b>{{room.other}} </b>"?</h5>
+        <input type="hidden" name="room_id" value="{{room.id}}">
+        <input type="hidden" name="form_name" value="delete_form">
+        <div class="text-center">  
+          <button type="submit" class="pull-right btn btn-theme btn-xs">
+            <i class="fa fa-trash"></i>
+            Confirm
+          </button>
+        </div>
+    </form>
+  </div>
+<br>

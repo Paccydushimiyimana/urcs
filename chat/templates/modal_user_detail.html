@@ -1,0 +1,20 @@
+<div style="margin: 20px;">
+    <a class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></a>
+    <h4 class="text-xs-center"><b>User details</b></h4>
+  </div>
+  <hr>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-xs-6">
+        <img class="img-circle" src="{{user.image.url}}" width="50%"><br>
+        <b>{{user.last_name}}</b>
+        <b>{{user.first_name}}</b> |
+        <b>{{user.username}}</b>
+      </div>
+    </div>
+    <hr>
+    <div class="row pad">
+      {% include 'category.html' %}
+    </div>
+  </div>
+<br>

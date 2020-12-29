@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}
+Database
+{% endblock %}
+{% block stylesheet %}
+<style>
+    td {
+        padding: 5px;
+    }
+</style>
+{% endblock %}
+{% block body %}
+<h5>all user</h5>
+<div style="height: 500px;overflow-y:auto;">
+<table border="2"  style="background-color:whitesmoke;">
+<thead style="background-color: khaki">
+    <td>fname</td> <td>lname</td> <td>email</td> <td>username</td> <td>phone</td> <td>category</td>
+    <td>subcategory</td> <td>skl</td> <td>dep</td> <td>lev</td>
+</thead> 
+<tbody>   
+{% for user in users %}
+<tr>
+<td>{{user.first_name}}</td>
+<td>{{user.last_name}}</td>
+<td>{{user.email}}</td>
+<td>{{user.username}}</td>
+<td>{{user.phone}}</td>
+<td>{{user.category}}</td>
+<td>{{user.subcategory}}</td>
+<td>{{user.school}}</td>
+<td>{{user.department}}</td>
+<td>{{user.level}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

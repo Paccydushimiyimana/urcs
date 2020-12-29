@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_pwd">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content text-center form-login">  
+        <div class="modal-header modal-title">
+          <span class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></span>
+          <h4 class="modal-title text-center"><b>{{request.user}}</> Change password</b></h4>
+        </div>
+        <div class="modal-body">
+          <form method="POST">
+            {% csrf_token %}
+            {{pwd_form|crispy}}
+            <input type="hidden" name="form_name" value="pwd_form">
+            <button class="pull-right btn btn-theme" type="submit">
+              <i class="fa fa-save"></i>
+              Save
+            </button>
+          </form>
+        </div>
+        <hr>
+      </div>
+    </div>
+  </div>

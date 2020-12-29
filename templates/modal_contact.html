@@ -1,0 +1,23 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_contact">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">  
+      <div class="modal-header modal-title">
+        <span class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></span>
+        <h4 class="modal-title text-center"><b>Contact us now</b></h4>
+      </div>
+      <div class="modal-body">         
+          <form method="POST" class="login-wrap">
+            {% csrf_token %}
+            {{contact_form|crispy}}
+            <input type="hidden" name="form_name" value="contact_form">
+            <div class="text-center">
+              <button class="btn btn-theme btn-round" type="submit">submit</button>
+            </div>
+          </form>
+        <hr>
+      </div>
+    </div>
+  </div>
+</div>

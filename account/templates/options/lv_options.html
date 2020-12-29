@@ -1,0 +1,19 @@
+{% if page == 'create' %}
+<select class="my_select form-control" id="id_level" name="Lv" multiple data-selected-text-format="count>1"> 
+  {% for level in levels %}   
+    <option value="{{level}}">{{level}}</option>  
+  {% endfor %} 
+</select>
+{% else %}
+<select class="my_select form-control" id="id_level" name="Lv"> 
+    <option value=""></option>
+  {% for level in levels %}   
+    <option value="{{level}}">{{level}}</option>  
+  {% endfor %} 
+</select>
+{% endif %}
+<script>
+      $(document).ready(function(){
+       $('.my_select').selectpicker()
+    }) 
+</script>

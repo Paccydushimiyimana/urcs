@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+  Home
+{% endblock %}
+{% block stylesheet %}
+  <style>
+   p {
+    font-size: 13px !important;
+    margin:unset !important;
+  }
+  input[type=text] {
+    background: transparent;
+    border: 0px;
+    border-bottom: 2px solid black;
+  }
+  input[type=password] {
+    background: transparent;
+    border: 0px;
+    border-bottom: 2px solid black;
+  }
+  input[type=email] {
+    background: transparent;
+    border: 0px;
+    border-bottom: 2px solid black;
+  }
+  .preload {
+      position: fixed; 
+      top: 0;right: 0; 
+      bottom: 0;left: 0;
+      z-index: 1555!important; 
+      height: 100%;
+      width: 100%;
+      background-color: white;
+  }
+  .primage {
+      position: relative;
+      display: block;
+      margin: 20vh auto auto auto;
+      /* border:solid */
+  }
+  .primage > img,#fountain{
+      position: relative; 
+      display: block; 
+      margin:auto;
+      width: 194px; 
+      /* border:solid */
+  }
+	.fountainG{
+		position:absolute;
+		background-color:#006891;
+		width:20px;
+		height:20px;
+		animation-name:bounce_fountainG;
+		animation-duration:1.4s;
+		animation-iteration-count:infinite;
+		animation-direction:normal;
+		transform:scale(.5);
+		border-radius:10px;
+	}
+	#fountainG_1{
+		left:25px;
+		animation-delay:0.6s;
+	}
+	#fountainG_2{
+		left:55px;
+		animation-delay:0.8s;
+	}
+	#fountainG_3{
+		left:85px;
+		animation-delay:1s;
+	}
+	#fountainG_4{
+		left:115px;
+		animation-delay:1.2s;
+	}
+	#fountainG_5{
+		left:145px;
+		animation-delay:1.4s;
+	}
+	@keyframes bounce_fountainG{
+		0%{transform:scale(1);background-color:#006891;}
+		100%{transform:scale(.5);background-color:rgb(255,255,255);}
+	}
+  @keyframes fadeout {
+      from {opacity: 1;}
+      to {opacity: 0;}
+  }
+  </style>
+{% endblock %}
+{% block active_home %}
+<a class="active" href="{% url 'home' %}">
+{% endblock %}
+
+{% block body %}
+    <div class="preload">
+      <div class="primage">
+        <img src="{% static 'img/logo.png' %}">
+        <div id="fountain">
+          <div id="fountainG_1" class="fountainG"></div>
+          <div id="fountainG_2" class="fountainG"></div>
+          <div id="fountainG_3" class="fountainG"></div>
+          <div id="fountainG_4" class="fountainG"></div>
+          <div id="fountainG_5" class="fountainG"></div>
+        </div>
+      </div>
+    </div>
+
+  <div style="opacity: 0.9;margin-top:-50px;">
+    <div class="row jumbotron" style="padding: 20px;background-color: black;color: snow;">
+      
+      <h4><b>WELCOME TO URCS.</b></h4>
+      <hr>
+        <h4>
+        The online communication platform for the University of Rwanda,
+        where you find all feeds and information released by the
+         University boaard,council,staff and other authorized personel 
+        </h4>
+        <br>
+        <i>
+        For more announcements related to your specific category,
+        {% if user.is_authenticated %}
+          <a class="" href="{% url 'inbox' user.username %}">
+        {% else %}    
+          <a class="" href="{% url 'inbox' 'user' %}">
+        {% endif %}    
+        click here</a> or use the 'announces' tab on the navigation.  
+        </i>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      {% if announces %}
+      <div class="slideshow-container">
+        {% for announce in announces %}
+          <div class="mySlides">
+            <div class="col" style="opacity: 0.8;color: black;">
+              <div class="product-panel-2">
+                {% if user.is_authenticated %}
+                  {% if user not in announce.viewed_by.all %}
+                  <div class="badge btn-theme04 pull-left">New</div>
+                  {% endif %}
+                {% else %}
+                <div class="badge btn-theme04 pull-left">New</div>
+                {% endif %}
+                <br>
+                <h4><u>{{announce.title|truncatechars:45}}</u></h4>
+                <br>
+                <div class="row" style="height: 130px;">
+                  <div class="col-md-8 col-xs-7">
+                    <div style="padding: 0 20px 20px 20px">
+                      <span class="pull-left">{{announce.content|safe|truncatechars:200}}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-xs-5">
+                    <span class="pull-left"><b>{{announce.sender}}/{{announce.sender.category|truncatechars:10}}</b></span>
+                    <br>
+                    <i class="fa pull-left">{{announce.date|date:'F d, Y'}}</i>
+                    <hr>
+                    <a class="modal_view btn btn-sm btn-theme pull-left" data-toggle="modal" data-target="#modal_id"
+                    data-url="{% url 'view_general' announce.pk %}">Open</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        <a class="prev" onclick="plusSlides(-1)">❮</a>
+        <a class="next" onclick="plusSlides(1)">❯</a>
+      </div>
+      <div class="dot-container">
+        {% for announce in announces %}
+          <span class="dot" onclick="currentSlide({{forloop.counter}})"></span>
+        {% endfor %} 
+      </div>
+      {% else %}
+      <div class="slideshow-container">
+          <div class="mySlides">
+            <div class="col" style="opacity: 0.8;color: black;">
+              <div class="product-panel-2">
+                <br>
+                <h4><u>  </u></h4>
+                <br>
+                <div class="row" style="height: 130px;">
+                  <div class="col">
+                    <div style="padding: 0 20px 20px 20px;">
+                      <span class="pull-left"><h3>There are no general announcements for now</h3></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="dot-container">
+          <span class="dot" onclick=""></span>
+      </div>
+      {% endif %}
+    </div>  
+    <div class="col-md-1"></div>  
+  </div>
+<div></div>
+{% endblock %} 
+
+{% block modals %}
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_id">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content mymodal"> 
+        
+      </div>
+  </div>
+</div>
+{% include 'modal_login.html' %}
+{% endblock %} 
+{% block script %}
+<script>
+  var slideIndex = 0;
+  showSlides(slideIndex);
+
+  function plusSlides(n) {
+    showSlides(slideIndex += n);
+  }
+  
+  function currentSlide(n) {
+    showSlides(slideIndex = n);
+  }
+  
+  function showSlides(n) {
+    var i;
+    var slides = document.getElementsByClassName("mySlides");
+    var dots = document.getElementsByClassName("dot");
+    if (n > slides.length) {slideIndex = 1}    
+    if (n < 1) {slideIndex = slides.length}
+    for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";  
+    }
+    for (i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+    }
+    slides[slideIndex-1].style.display = "block";  
+    dots[slideIndex-1].className += " active";
+  }
+
+  $(document).ready(function autoslide() {
+    plusSlides(1);
+    setTimeout(autoslide,5000)
+  })
+ 
+</script>
+<script>
+  $('.modal_view').click(function(){
+    console.log('click')
+    $.ajax({
+      url:$(this).data('url'),
+      success:function(self){
+        $('.mymodal').html(self)
+        console.log(self)
+      }
+    })
+  })
+</script>
+<script>
+  $('.showhide').click(function(){
+      if($('#id_password').attr('type') =='password'){
+          $('#id_password').attr('type','text')
+          $('.showhide').addClass('fa-eye-slash')
+      }
+      else{
+          $('#id_password').attr('type','password')
+          $('.showhide').removeClass('fa-eye-slash')
+      }
+  })
+</script>
+<!-- preloader function -->
+<script>
+  $(window).on("load",function(){
+    $(".preload").fadeOut("slow");
+  });
+</script>
+{% endblock %}

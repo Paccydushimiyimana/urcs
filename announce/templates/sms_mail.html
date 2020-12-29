@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    {% block title %}
+    {% endblock %}
+  </title>
+
+  <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+ 
+  {% block stylesheet %}
+  {% endblock %}
+</head>
+
+<body>
+
+<div class="row jumbotron">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+        <div class="panel text-center">          
+            <h4>Hello!.. "{{ receiver.username }}"</h4>        
+            You have received an announce on your urcs account;written by {{announce.sender}}/{{announce.sender.category}} <br>
+            <br>
+            announcement title:<b><u>{{announce.title}}</u></b>
+            <br><br>
+            check your inbox or click to the link below<br>
+            <br>
+            <span>   
+              <a href="{{ protocol }}://{{ domain }}{% url 'view' 'inbox' announce.id %}">{{ protocol }}://{{ domain }}{% url 'view' 'inbox' announce.id %}</a>
+            </span>
+            <br><br>             
+            <p style='color:rgb(0, 0, 0);'> Good Day!! </p>
+        </div>
+    </div> 
+    <div class="col-xs-1"></div>
+</div>   
+</body>
+</html>

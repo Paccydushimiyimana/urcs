@@ -1,0 +1,134 @@
+ {% load static %}
+
+    <section class="panel" id="chat_log">
+        <div class="panel-heading">
+            <div class="row ">
+                <div class="col-md-11 col-xs-10"> 
+                    <h4 class="gen-case">Chatlog with 
+                        {% if room.me == user %}
+                        <a class="btn user_detail" data-toggle="modal" data-target="#modal_user_detail" data-value="{{room.other.id}}">
+                            <b> {{room.other}}</b>
+                        </a> 
+                        {% else %}
+                        <a class="btn user_detail" data-toggle="modal" data-target="#modal_user_detail" data-value="{{room.me.id}}">
+                            <b> {{room.me}}</b>
+                        </a> 
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="col-md-1 col-xs-2">
+                    <button class="btn btn-warning btn-xs btn-round" id="close_btn">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div><hr>
+        </div>
+        <div class="panel-body">
+            <div id="log_{{room.id}}" class="msg_history">
+                {% for message in room.messages.all %}
+                {% if user == message.sender %}
+                <div class="outgoing_msg">
+                    <div class="sent_msg">
+                        <p>
+                            <span>{{message.content}}</span>
+                            <span class="time_date"> {{message.timestamp|date:'M,d'}}</span> 
+                        </p>
+                    </div>
+                </div>                
+                {% else %}
+                <div class="ingoing_msg">
+                    <div class="recv_msg">
+                        <p>
+                            <span>{{message.content}}</span>
+                            <span class="time_date">{{message.timestamp|date:'M,d'}}</span>
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}	
+            </div>
+            
+            <div class="type_msg">
+                <div class="input_msg_write">
+                <form id='form' method="POST" data-urlpassing="{% url 'passing_msg' room.id %}">
+                    {% csrf_token %}
+                    <input id="msg" type="text" class="write_msg" placeholder="Type a message" />
+                    <button type="submit" class="msg_send_btn"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                </form>
+                </div>
+            </div>     
+        </div>
+    </section>
+    <input id="room" type="hidden" value="{{room.id}}">
+    <input id="user" type="hidden" value="{{user.username}}">
+<!-- script for chat websocket connection -->
+<script>
+    var msg_npt = $('#msg')
+    var form = $('#form')
+    var hist =$('#hist')
+    var room = $('#room')
+    // Create a new WebSocket
+    var prot = 'ws://' 
+    if (window.location.protocol == 'https:'){
+        prot = 'wss://'
+    }
+    var ws = new WebSocket(prot+window.location.host+window.location.pathname+room.val()+'/')
+    // Send a new message when the WebSocket opens
+    ws.onopen = function(self) {
+        console.log('ws connected')
+        form.submit(function(self){
+            self.preventDefault()
+            if (msg_npt.val() == ''){
+                alert('Your message is empty')
+            }
+            else{
+                var path = window.location.pathname.split('/')
+                var msg_dict = {'message':msg_npt.val(),'sender':path[2]}
+                var data_sent = JSON.stringify(msg_dict)
+                ws.send(data_sent)
+            }
+            form[0].reset()
+        })
+    }
+    // Make it shown when a message is received
+    ws.onmessage = function(self){ 
+        var data_recvd = JSON.parse(self.data)
+        var pass_url = form.data('urlpassing')
+        var pass_msg = data_recvd.message
+        var pass_sndr = data_recvd.sender
+        var room_id = data_recvd.room
+        
+        $.ajax({
+            url : pass_url,
+            data:{ msg : pass_msg , sndr :pass_sndr },
+            success:function(self){        
+                $('#log_'+room_id).append(self)
+            } 
+        })
+
+        var user = $('#user').val()
+        if (user != pass_sndr){
+            setTimeout(()=> {$('#'+room_id).html('+')} ,1000)
+        }
+    }    
+</script> 
+<!-- script to close the chatlog -->
+<script>
+    $('#close_btn').click(function(){
+        document.getElementById('chat_log').style.display='none';
+        showNav(); 
+    })
+</script>
+<script>
+    $('.user_detail').click(function(){
+        _id = $(this).data('value')
+        $.ajax({
+            data:{id:_id},
+            url:"{% url 'user_detail' %}",
+            success:function(self){
+                $('.mymodal').html(self)
+            }
+        })
+    })
+</script>
+

@@ -1,0 +1,27 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_archive">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content form-login">  
+      <div style="margin:20px;">
+        <a class="btn btn-xs pull-right" data-dismiss="modal"><i class="fa fa-times"></i></a>
+        <h4 class="text-xs-center"><b>Archive list </b></h4>
+      </div><hr>
+      <div class="modal-body">
+        <br>
+        <div style="height: 200px;overflow-y: auto;">
+          {% if request.user.archives.all %}
+            <ol>
+                {% for announce in request.user.archives.all %}
+                    <li>{{announce.title}}</li>
+                {% endfor %}
+            </ol>
+          {% else %} 
+            <h4><i class="fa fa-exclamation"></i> Your archive is currently empty.</h4>
+          {% endif %}
+        </div>
+        <br>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+channels = "*"
+channels-redis = "*"
+django-ckeditor = "*"
+django-crispy-forms = "*"
+dj-database-url = "*"
+pillow = "*"
+psycopg2-binary = "*"
+python-decouple = "*"
+whitenoise = "*"
+requests = "*"
+django-twilio = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

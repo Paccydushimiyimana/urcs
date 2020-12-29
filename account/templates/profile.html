@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}
+  Profile
+{% endblock %}
+{% block active_acc %}
+<a class="active" href="javascript:;">
+{% endblock %}
+{% block active_acc_prfle %}
+<li class="active">
+{% endblock %}
+{% block body %}
+<div class="row">
+  <div class="col-md-1"></div>
+  <div class="col-md-10" style="opacity: 0.9;color: black;">
+    <div class="white-panel">
+      <div class="panel-heading">
+        <div>
+          <div class="pull-left">
+            <h4><i class="fa fa-user"></i><b> {{user.username}}</b> profile</h4>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div><hr>
+          <form class="form" id="user" method="POST" enctype="multipart/form-data" onsubmit="return validation()" style="height: 450px;overflow-y: auto;overflow-x: hidden;">                
+            {% csrf_token %}
+            <div class="col-md-3 col-xs-12"><!--left col-->
+              <div class="text-center">
+                <img src="{{user.image.url}}" class="img-circle" width="50%">
+                {{update_form.image|as_crispy_field}}
+              </div></hr>
+              <ul class="list-group">
+                <li class="list-group-item text-muted">Activities <i class="fa fa-dashboard fa-1x"></i></li>
+                <li class="list-group-item text-right"><span class="pull-left"><strong>Inbox</strong></span>{{inbox}}</li>
+                <li class="list-group-item text-right"><span class="pull-left"><strong>Board</strong></span>{{board}}</li>
+                <li class="list-group-item text-right"><span class="pull-left"><strong>Chats</strong></span>{{chats}}</li>
+              </ul> 
+            </div><!--/col-3-->
+            <div class="col-md-9">
+              <div class="row">
+                <div class="col-xs-4">
+                  {{update_form.first_name|as_crispy_field}}
+                </div>
+                <div class="col-xs-4">
+                    {{update_form.last_name|as_crispy_field}}
+                </div>
+                <div class="col-xs-4">
+                  {{update_form.username|as_crispy_field}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-4">
+                    {{update_form.phone|as_crispy_field}}
+                </div>
+                <div class="col-xs-4">
+                    {{update_form.email|as_crispy_field}}
+                </div>
+                <div class="col-xs-4">
+                  <label>Category:</label>
+                  <div class="error_msg" id="cat_msg"><b><i class="fa fa-exclamation-circle"></i> </b></div>
+                  <select class="form-control my_select" id="id_category" name="Catgy">
+                      <option value="{{user.category}}">{{user.category}}</option>
+                    {% for category in categories %} 
+                      <option  value="{{category.name}}">{{category.name}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>    
+
+              <div id="id_cat" class="form-group">
+               {% include 'category.html' %}
+              </div>
+              <input id="form" type="hidden" name="form_name" value="update_form">
+              <hr>
+              <div class="row justify-content-center">
+                <button class="btn btn-theme" type="submit"> 
+                  Update 
+                </button>
+              </div>                  
+            </div>
+          </form>
+        </div>
+      </div>  
+    </div> 
+  </div>
+  <div class="col-md-1"></div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+  $(document).ready(function(){
+    $('.my_select').selectpicker()
+  })
+
+  $('#id_category').change(function() {
+      let cat_select = $(this).val();
+      $.ajax({
+        url: "{% url 'load_category' %}",
+        data: {
+          category : cat_select,
+        },
+        success: function(response) {
+          $('#id_cat').html(response)
+        }
+      })
+    });
+
+   $('#id_school').change(function() {
+    let skl_select = $(this).val();
+    j_skl = JSON.stringify(skl_select)
+      // console.log(j_skl);
+      if (j_skl != 'null'){
+        $.ajax({
+          url: "{% url 'load_departments' %}",
+          data: {
+              school: j_skl,
+              page : "{{page}}"
+          },
+          success: function(response) {
+              $('#department').html(response)
+          }
+          })
+        }
+    });
+    
+  $('#id_department').change(function() {
+    let depart_select = $(this).val();
+    j_depart = JSON.stringify(depart_select) 
+    console.log(j_depart);
+    if (j_depart != 'null'){
+        $.ajax({
+            url: "{% url 'load_levels' %}",
+            data: {
+                department: j_depart,
+                page:"{{page}}"
+            },
+            success: function(response) {
+                $('#level').html(response)
+            }
+        })
+    }
+    
+});
+  
+</script>
+<script>
+  function validation() {
+    var cat = $("#id_category").val();
+    if (cat == '') {
+      msg = document.getElementById('cat_msg')
+      msg.style.display="inline"
+      setTimeout(()=> {msg.style.display="none"} ,3000)
+      return false;
+    }  
+    else{
+      if(cat =='Student'){
+        var sub = $("#id_sub_category").val();
+        var skl = $("#id_school").val();
+        var depart = $("#id_department").val();
+        var lev = $("#id_level").val();
+        if (sub == '') {
+          msg = document.getElementById('sub_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (skl == '') {
+          msg = document.getElementById('skl_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (depart == '') {
+          msg = document.getElementById('depart_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (lev == '') {
+          msg = document.getElementById('lev_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+      }
+      if(cat =='Lecturer'){
+        var sub = $("#id_sub_category").val();
+        var skl = $("#id_school").val();
+        var depart = $("#id_department").val();
+        var lev = $("#id_level").val();
+        if (sub == '') {
+          msg = document.getElementById('sub_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (skl == '') {
+          msg = document.getElementById('skl_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (depart == '') {
+          msg = document.getElementById('depart_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (lev == '') {
+          msg = document.getElementById('lev_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+      }
+      if(cat =='Department council'){
+        var sub = $("#id_sub_category").val();
+        var skl = $("#id_school").val();
+        var depart = $("#id_department").val();
+        if (sub == '') {
+          msg = document.getElementById('sub_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (skl == '') {
+          msg = document.getElementById('skl_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (depart == '') {
+          msg = document.getElementById('depart_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+      }
+      if(cat =='School council'){
+        var sub = $("#id_sub_category").val();
+        var skl = $("#id_school").val();
+        if (sub == '') {
+          msg = document.getElementById('sub_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+        if (skl == '') {
+          msg = document.getElementById('skl_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+      }
+      if(cat =='Academic council'){
+        var sub = $("#id_sub_category").val();
+        if (sub == '') {
+          msg = document.getElementById('sub_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+      }
+      if(cat =='College council'){
+        var sub = $("#id_sub_category").val();
+        if (sub == '') {
+          msg = document.getElementById('sub_msg')
+          msg.style.display="inline"
+          setTimeout(()=> {msg.style.display="none"} ,3000)
+          return false;
+        }
+      }
+    }         
+  }
+</script>
+{% endblock %}

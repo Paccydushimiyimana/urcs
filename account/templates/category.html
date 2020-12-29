@@ -1,0 +1,39 @@
+{% load static %}
+{% if cat == 'Student' %}
+  {% include 'fields/student_fields.html' %}
+{% elif cat == 'Lecturer' %}
+  {% include 'fields/lecturer_fields.html' %}
+{% elif cat == 'College council' %}
+  {% include 'fields/col_council_fields.html' %}
+{% elif cat == 'Academic council' %}
+  {% include 'fields/acad_council_fields.html' %}
+{% elif cat == 'School council' %}
+  {% include 'fields/skl_council_fields.html' %}
+{% elif cat == 'Department council' %}
+  {% include 'fields/dep_council_fields.html' %}
+{% else %}
+<div>This category has no fields</div>
+{% endif %}
+<script>
+  $(document).ready(function(){
+    $('.my_select').selectpicker()
+  })
+
+  $('#id_school').change(function() {
+    let skl_select = $(this).val();
+    j_skl = JSON.stringify(skl_select)
+      // console.log(j_skl);
+      if (j_skl != 'null'){
+        $.ajax({
+          url: "{% url 'load_departments' %}",
+          data: {
+              school: j_skl,
+              page : "{{page}}"
+          },
+          success: function(response) {
+              $('#department').html(response)
+          }
+          })
+        }
+    });
+</script>

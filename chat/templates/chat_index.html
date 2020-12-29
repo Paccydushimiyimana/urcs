@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+  {{user}} Chat
+{% endblock %}
+{% block stylesheet %}
+<style>
+    .chathist {
+    position:absolute;
+    overflow-x: hidden;
+    z-index: 1;
+    }
+    .activee{
+        background-color:#c5cdd6 !important;
+    }
+    .btnee{
+        border-width: 2px;
+        border-color: steelblue;
+    }
+</style>
+{% endblock %}
+{% block active_chat %}
+  <a class="active" href="{% url 'chat' user.username %}">
+{% endblock %}
+{% block bdy_tag %}
+<body onresize="myFunction()">
+{% endblock %}
+{% block body %}
+<div style="height: 500px;">
+    <button class="navtgl btnee btn btn-lg fa fa-list" style="background-color: whitesmoke;"> Chats </button>
+    <div class="row">
+        <nav class="chathist">
+            <section class="panel" style="background-color:rgb(230, 230, 230);width: 220px;">
+                <div class="panel-heading">
+                    <div>
+                        <p>
+                            <span style="font-size: 100%;">Recent</span>
+                            <input id="search" class="btn btn-xs pull-right" type="text" placeholder="Search..." style="width: 100px;">
+                        </p><hr>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <a class="btn btn-theme btn-sm" data-toggle="modal" data-target="#modal_add_chat">
+                            <i class="fa fa-plus"></i>  New Chat
+                        </a>
+                        <a data-original-title="Refresh" class="btn mini tooltips" onclick="load_chats()">
+                            <i class=" fa fa-refresh"></i>
+                        </a>
+                    </div>
+                    <br>
+                    <div class="chat_history">
+                        <ul id="ulist" class="nav nav-pills nav-stacked">                    
+                            {% for room in rooms %} 
+                                                
+                            <li id="ch_{{room.id}}" class="room" value="{{room.id}}" data-url_room="{% url 'passing_box' room.id %}">
+                                <a style="background-color: whitesmoke;padding-left: 0;">
+                                    {% if user == room.me %} 
+                                        <i class="fa fa-trash pull-left btn btn-round del_chat" data-value="{{room.id}}" style="color:red ;padding: 4px;margin-top:-15px ;" data-toggle="modal" data-target="#modal_dchat"></i>
+                                        <div class="chat_img"><img src="{{ room.other.image.url }}"></div>
+                                        <b style="margin-left:10px ;color:#108aaf">{{room.other}}</b> 
+                                    {% else %}                             
+                                        <i class="pull-left"style="padding: 12px;margin-top:-15px;"></i>
+                                        <div class="chat_img"><img src="{{ room.me.image.url }}"></div>
+                                        <b style="margin-left:10px ;color:#108aaf">{{room.me}}</b>
+                                    {% endif %}
+                                    <span id="{{room.id}}" class="pull-right label label-theme"></span>
+                                </a>
+                            </li>
+                            
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </nav>
+        <div class="preload">
+            <img id="preload" style="display: none;margin:auto ;z-index: -100;width: 40px;" src="{% static 'img/ajax.gif' %}">
+        </div>
+        <div class="chatlog" id="mybox"> </div>
+    </div>
+</div>
+{% endblock %}
+{% block modals %}
+  {% include 'modal_add_chat.html' %}
+  <div class="modal fade" tabindex="-1" role="dialog" id="modal_dchat">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content mymodal form-login"> 
+        </div>
+    </div>
+  </div> 
+  <div class="modal fade" tabindex="-1" role="dialog" id="modal_user_detail">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content mymodal form-login"> 
+        </div>
+    </div>
+  </div>
+{% endblock %}   
+
+{% block script %}
+<script>
+    load_chats(); //loads chat notifications when this page is loaded
+</script>
+<script> 
+    $(document).ready(function() { 
+      $("#search").on("keyup", function() { 
+        var value = $(this).val().toLowerCase(); 
+        $("#ulist li").filter(function() { 
+          $(this).toggle($(this).text() 
+          .toLowerCase().indexOf(value) > -1) 
+        }); 
+      }); 
+    });
+    //  
+</script>
+<script>    
+    $('.room').click(function() { 
+        var id = $(this).val()
+        $.ajax({
+            url : $(this).data('url_room'),
+            beforeSend:function(){        
+                $('#mybox').html('')
+                $('#preload').show();
+            },
+            complete:function(){
+                $('#preload').hide();
+            },
+            success:function(self){        
+                $('#mybox').html(self)
+            } 
+        });
+        $('#'+id).html('');
+        
+        load_notifs();
+
+        var width = window.outerWidth;
+        if (width < 600){
+            hideNav()
+        };
+        $('.room>a').removeClass('activee')
+        $('#ch_'+id+'>a').addClass('activee')  
+    })
+</script> 
+<!-- chat_nav and chat log -->
+<script> 
+    showNav(); 
+
+    function myFunction() {
+        var width = window.outerWidth;
+        if (width >= 600){
+            showNav();
+        }
+        else{
+            hideNav();
+        }
+    }  
+
+    var active 
+
+    $('.navtgl').click(function(){
+
+        // console.log($(this))
+
+        if (active == 0){
+            showNav();
+        }
+        else{
+            hideNav();
+        }
+    
+    });
+    
+    function showNav() {
+
+        var width = window.outerWidth;
+
+        $(".chathist").css("marginLeft", "10px")
+        $(".chathist").css("width" , "220px")
+        $('.chatlog').css("marginRight" , "10px")
+
+        if (width >= 600){
+            $('.chatlog').css("marginLeft", "240px")
+            $('.preload').css("marginLeft", "240px")
+        } 
+        else{
+            $('.chatlog').css("marginLeft" , "10px")
+            $('.preload').css("marginLeft" , "10px")
+        }
+        active = 1
+
+    }
+    function hideNav() {
+        $(".chathist").css("width" , "0")
+        $('.chatlog').css("marginLeft", "10px")
+        $('.preload').css("marginLeft", "10px")
+        active = 0
+    }
+    
+</script>
+<!-- deleting a chat -->
+<script>
+    $('.del_chat').click(function(){
+        room = $(this).data('value')
+        console.log(room)
+        $.ajax({
+            data:{room : room},
+            url:"{% url 'del_chat' %}",
+            success:function(self){        
+                $('.mymodal').html(self)
+            } 
+        });
+    })
+</script>
+{% endblock %}
+
+
+

@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+  {{user}} Board
+{% endblock %}
+{% block stylesheet %}
+<link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}">
+<style>
+  .striker{
+    text-decoration: line-through!important;
+    }
+</style>
+{% endblock %}
+{% block active_announces %}
+  <a class="active" href="javascript:;">
+{% endblock %}
+{% block active_ancts_board %}
+<li class="active">
+{% endblock %}
+{% block bdy_tag %}
+  <body onresize="resize_fx()"> 
+{% endblock %}
+{% block body %}
+  <div class="row">
+    <div class="col-md-10">
+      <form id="form" method="POST">
+        {% csrf_token %}
+        <div class="white-panel" style="opacity: 0.95">
+          <div class="panel-heading">
+            <div>
+              <div class="pull-left">
+                <h5><i class="fa fa-tasks"></i> Board List</h5>
+              </div>
+              <a data-original-title="Refresh" data-placement="top" href="" class="btn mini tooltips">
+                <i class=" fa fa-refresh"></i>
+              </a>
+
+              <input id="hide" class="btn btn-xs btn-danger" type="hidden" value="Delete" data-toggle="modal" data-target="#modal_checked">
+
+              <div class="pull-right">
+                <a class="btn btn-success btn-sm" href="{% url 'create' user.username %}">
+                  <i class="fa fa-pencil"></i>
+                  Compose
+                </a>              
+              </div>
+            </div>
+            <div class="pull-right">
+              <input id="search" type="text" class="form-control " placeholder="Search...">
+            </div>
+            
+          </div><hr>
+          {% if announces %} 
+            <div class="panel-body" style="height: 400px;overflow-y: auto;">
+              <table class="table table-hover">
+                <tbody>
+                {% for announce in announces %} 
+                  <tr class="row" style="margin: unset;">
+                    <td class="col-xs-6">
+                      <div class="pull-left">
+                        <input class="check" type="checkbox" name="row" value="{{announce.id}}">&nbsp;&nbsp;
+                        <b><a id="{{announce.id}}" class="title" data-id="{{announce.id}}" data-title="{{announce.title}}" href="{% url 'view' 'board' announce.pk %}"></a></b>                    
+                      </div>
+                    </td>
+                    <td class="col-xs-2">
+                      <div class="row">
+                        <div class="pull-left">
+                          {% if announce.file %}
+                            <i class="fa fa-paperclip"></i>
+                          {% else %}  
+                          <i class="fa fa">&nbsp;&nbsp;&nbsp;</i>
+                          {% endif %}
+                        </div>
+                        <span>  
+                          <i class="fa fa-eye"></i>: {{announce.viewed_by.count}}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="col-xs-2">
+                      <div class="row">
+                        <i class="fa fa-calendar"  style="font-size: 10px;"></i> {{announce.date|date:'M,d'}}
+                      </div>  
+                    </td>
+                    <td class="col-xs-2">
+                      <div class="row" >
+                        <div class="col-xs-2">
+                          <a class="btn btn-theme btn-xs" href="{% url 'edit' announce.id user.username %}" style="margin: unset;">
+                            <i class="fa fa-edit"></i>
+                          </a>
+                        </div>
+                        <div class="col-xs-2">
+                          <a class="modal_delete btn btn-danger btn-xs" data-toggle="modal" data-target="#modal_id"
+                          data-url="{% url 'modal_delete_pass' announce.id %}" style="margin: unset;">
+                          <i class="fa fa-trash-o "></i>
+                          </a>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>     
+                {% endfor %} 
+                </tbody>
+              </table>
+            </div>  
+          {% else %} 
+            <div class="panel-body" style="height: 350px;overflow-y: auto;">
+              <table class="table table-hover">
+                <tbody>
+                <h3><i class="fa fa-exclamation"></i> Your board is currently empty !!</h3><br><br>
+                <h4 class="pull-left">
+                  Haven't created any announcement yet?
+                </h4><br>
+                <h5 class="pull-left">Start <a href="{% url 'create' user.username %}"><u>NOW</u></a></h5>                
+              </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div> 
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block modals %}
+  <div class="modal fade" tabindex="-1" role="dialog" id="modal_id">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content mymodal form-login"> 
+        </div>
+    </div>
+  </div>
+  <div class="modal fade" tabindex="-1" role="dialog" id="modal_checked">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content form-login mymodal"> 
+        </div>
+    </div>
+  </div>
+{% endblock %}  
+
+{% block script %}
+<script>
+  truncate_fx();
+
+  function resize_fx() {
+    truncate_fx();
+  }
+
+  function truncate_fx() {
+    $('.title').each(function(){
+      var og_text = $(this).data('title')
+      var _id = $(this).data('id')
+      var  wdt = parseInt(window.outerWidth/36)
+
+      if (og_text.length > wdt){
+        new_text = og_text.substring(0,wdt)
+        $('#'+_id).html(new_text+'...')
+      }
+      else{
+        $('#'+_id).html(og_text)   
+      }
+    })
+  }
+</script>
+<script> 
+  $(document).ready(function() { 
+    $("#search").on("keyup", function() { 
+      var value = $(this).val().toLowerCase(); 
+      $("#tbody tr").filter(function() { 
+        $(this).toggle($(this).text() 
+        .toLowerCase().indexOf(value) > -1) 
+      }); 
+    }); 
+  }); 
+</script>
+<script>
+    $('.modal_delete').click(function(){
+      $.ajax({
+        url:$(this).data('url'),
+        success:function(self){
+          $('.mymodal').html(self)
+        }
+      })
+    })
+</script>
+<script>
+  $('#id_category').change(function() {
+      let fld_url = $('#anct').data('urlcategory');
+      let cat_select = $(this).val();
+      console.log(cat_select);
+      $.ajax({
+        url: fld_url,
+        data: {
+          category: cat_select,
+          page:'board'
+        },
+        success: function(response) {
+          $('#id').html(response)
+        }
+      })
+    });
+</script>
+<script>
+  $(document).ready(function() { 
+    $('.check').change(function () {
+      if ($(this).is(':checked')){
+        var row = $(this).parent().parent().parent()
+        row.addClass('striker')
+      }
+      else{
+        var row = $(this).parent().parent().parent()
+        row.removeClass('striker')
+      }
+      var active 
+      var hider = $('#hide')
+      $('.check').each(function(){  
+        if ($(this).is(':checked')){
+          active = 1
+        }
+      })
+      if (active == 1){
+        hider[0].type='submit'
+      }
+      else{
+        hider[0].type='hidden'
+      }
+    })
+  })
+
+  $('#form').submit(function(self){
+    self.preventDefault()
+    var list = []
+    $('.check').each(function(){  
+      if ($(this).is(':checked')){
+        data = parseInt($(this).val())
+        list.push(data)
+      }
+    })     
+      // console.log('final',list)
+      j_list = JSON.stringify(list)
+      // console.log('ajax',j_list)
+    $.ajax({
+      url:"{% url 'archive_rows' %}",
+      data:{rows:j_list,page:'{{page}}'},
+      success:function (response) {
+        $('.mymodal').html(response)
+      }
+    })
+  })  
+</script>
+{% endblock %}
