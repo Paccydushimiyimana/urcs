@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-
     path('inbox/new_row/',views.new_row_view,name='new_row'),
     path('inbox/archive_rows/',views.archive_view,name='archive_rows'),
     path('inbox/<str:user_name>/',views.inbox,name='inbox'),
